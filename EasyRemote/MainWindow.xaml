@@ -1,0 +1,57 @@
+﻿<Window x:Class="EasyRemote.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EasyRemote"
+        mc:Ignorable="d"
+        Title="EasyRemote" Height="250" Width="600" Loaded="onLoaded" Closing="onClosing" Closed="onClosed" >
+    <StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <Label Content="ポート"/>
+            <TextBox x:Name="m_accessPortTxt" Width="80" LostFocus="onAccessPortLostFocus" HorizontalAlignment="Right" TextAlignment="Right"/>
+            <Label Content=" 表示レート"/>
+            <TextBox x:Name="m_showRateTxt" Width="40" LostFocus="onShowRateTxt"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
+            <Label Content="アクセスURL"/>
+            <TextBox x:Name="m_accessURLText" Width="500" IsReadOnly="True"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
+            <Label Content="パスコード" />
+            <TextBox x:Name="m_passcodeText" Width="50" TextAlignment="Center" IsReadOnly="True"/>
+            <Label Content="パスコード不要"/>
+            <CheckBox x:Name="m_passcdeEnableCheck" Checked="onPasscodeEnableChecked" VerticalAlignment="Center" Unchecked="onPasscodeEnableChecked" />
+        </StackPanel>
+        <StackPanel Margin="0,20,0,0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button x:Name="m_startEndButton" Content="開始" Width="100" Height="50" Click="onStartEndButton" />
+            <Label Content="表示のみ" VerticalAlignment="Center"/>
+            <CheckBox x:Name="m_showOnlyCheck" VerticalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel x:Name="m_nowAccessPanel"  Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0" >
+            <Label x:Name="m_nowAccessLabel" Content="アクセス中IP="/>
+            <Label x:Name="m_nowAccessIpLabel"/>
+        </StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <Label Content="現在キャプチャ処理時間"/>
+                <Label x:Name="m_nowFPSLabel"/>
+            </StackPanel>
+            <Button Grid.Column="1" x:Name="m_logButton" Content="ログ" Width="100" HorizontalAlignment="Right" Click="onLogButton"/>
+        </Grid>
+<!--       
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button x:Name="m_logButton1" Content="ログ" Width="100" Click="onLogButton"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="m_logButton" Content="ログ" Width="100" Click="onLogButton"/>
+            </StackPanel>
+        </StackPanel>
+-->        
+    </StackPanel>
+</Window>
