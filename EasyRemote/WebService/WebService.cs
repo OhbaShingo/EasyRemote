@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Security.Policy;
 using System.Text;
@@ -90,6 +92,125 @@ namespace EasyRemote.WebService
             m_passCode = (ushort)random.Next( 100, 999 );
         }
 
+        /// <summary>
+        /// 指定ポートはWebポートとして有効か
+        /// </summary>
+        /// <param name="port"></param>
+        /// <returns></returns>
+        public bool isEnableWebPort( int port )
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
+            {   // 確認コマンド発行
+                FileName = "netsh",
+                Arguments = "http show urlacl",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            bool isEnable = false;
+            using (Process process = Process.Start(psi))
+            {   // 指定ポートがWebサービスとして登録済みか否か
+                string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+                isEnable = output.Contains($"http://+:{port}/");
+            }
+            return isEnable;
+        }
+
+        /// <summary>
+        /// Webポート有効化
+        /// </summary>
+        /// <param name="port"></param>
+        public bool enableWebPort(int port)
+        {
+            if(isEnableWebPort(port) == true) { return true; }  // 既に有効なら何もしない
+
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "netsh",
+                Arguments = $"http add urlacl url=http://+:{port}/ user=Everyone",
+                Verb = "runas",
+                UseShellExecute = true,
+                CreateNoWindow = true
+            };
+            try
+            {
+                Process.Start(psi);
+            }
+            catch
+            {
+                // 例外は無視
+            }
+
+            return isEnableWebPort(port);   // もう一度有効になっているか確認
+        }
+
+        /// <summary>
+        /// ホットスポット（PCをアクセスポイント化する）が有効か？
+        /// </summary>
+        /// <returns></returns>
+        public bool isHotspotEnabled()
+        {
+            var psi = new ProcessStartInfo()
+            {
+                FileName = "powershell",
+                Arguments = "-Command \"(Get-MobileHotspotSettings).Enabled\"",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using (var proc = Process.Start(psi))
+            {
+                string output = proc.StandardOutput.ReadToEnd();
+                proc.WaitForExit();
+
+                // PowerShell の True/False を C# の bool に変換
+                return output.Trim().Equals("True", StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+
+        /// <summary>
+        /// ホットスポット有効/無効
+        /// </summary>
+        /// <param name="enable"></param>
+        public void setHotspot( bool enable, string password = "" )
+        {
+            string enableTxt = "false";
+            string setting_password = "";
+            if( enable == true && password.Length >= 8 ) {
+                // パスワードが8文字以上の時のみ有効
+                enableTxt = "true";
+                setting_password = $" -Password { password } ";
+            }
+
+            string ps = $"Set-MobileHotspot -Enabled ${enableTxt}";
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = "powershell",
+                Arguments = $"-Command \"{ps}\"",
+                Verb = "runas",
+                UseShellExecute = true,
+                CreateNoWindow = true
+            };
+            Process.Start(psi);
+        }
+
+
+
+
+
+        /// <summary>
+        /// 使用中ネットワークカード一覧
+        /// </summary>
+        /// <returns></returns>
+        public List<AccessInfo> getNetworkCardList()
+        {
+            return AccessInfo.getAccessInfos();
+        }
         
         /// <summary>
         /// リクエスト可能なURLの取得

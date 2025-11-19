@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	  <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,4 +29,34 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Libs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="QRCoder">
+      <HintPath>Libs\QRCoder.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+<!--
+	<ItemGroup>
+		<Content Include="Html\**\*.*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<Link>html\%(RecursiveDir)%(Filename)%(Extension)</Link>
+		</Content>
+	</ItemGroup>
+-->
+
+	<Target Name="CreateHtmlJunction" AfterTargets="Build">
+		<!-- プロジェクト内の html フォルダ（実体） -->
+		<PropertyGroup>
+			<HtmlSourceDir>$(ProjectDir)html</HtmlSourceDir>
+			<HtmlJunctionDir>$(OutDir)html</HtmlJunctionDir>
+		</PropertyGroup>
+
+		<!-- 出力先に html が無い時だけジャンクションを作成 -->
+		<Exec Command="if not exist &quot;$(HtmlJunctionDir)&quot; cmd /c mklink /J &quot;$(HtmlJunctionDir)&quot; &quot;$(HtmlSourceDir)&quot;" />
+	</Target>	
+	
+	
 </Project>

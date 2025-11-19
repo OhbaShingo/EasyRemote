@@ -5,27 +5,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EasyRemote"
         mc:Ignorable="d"
-        Title="EasyRemote" Height="250" Width="600" Loaded="onLoaded" Closing="onClosing" Closed="onClosed" >
+        Title="EasyRemote" Height="550" Width="600" Loaded="onLoaded" Closing="onClosing" Closed="onClosed" >
     <StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <Label Content="ポート"/>
             <TextBox x:Name="m_accessPortTxt" Width="80" LostFocus="onAccessPortLostFocus" HorizontalAlignment="Right" TextAlignment="Right"/>
-            <Label Content=" 表示レート"/>
+            <Button x:Name="m_portEnableButton" Content="ポート有効化" Width="65" Click="onPortEnableButton"/>
+            <Label Content=" 表示レート" Margin="50,0,0,0"/>
             <TextBox x:Name="m_showRateTxt" Width="40" LostFocus="onShowRateTxt"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
-            <Label Content="アクセスURL"/>
-            <TextBox x:Name="m_accessURLText" Width="500" IsReadOnly="True"/>
-        </StackPanel>
+        <GroupBox Header="ネットワーク">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="AUTO"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="200"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0"  Content="ネットワークカード"/>
+                <ComboBox x:Name="m_cardCombo" Grid.Row="0" Grid.Column="1" SelectionChanged="onCardComboSelectChange" ></ComboBox>
+                <Label Grid.Row="1" Grid.Column="0" Content="アクセスURL"/>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="m_accessURLText" IsReadOnly="True"/>
+                <Image Grid.Row="2" Grid.Column="1" x:Name="m_accessQrImage"/>
+            </Grid>    
+        </GroupBox>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
             <Label Content="パスコード" />
             <TextBox x:Name="m_passcodeText" Width="50" TextAlignment="Center" IsReadOnly="True"/>
             <Label Content="パスコード不要"/>
-            <CheckBox x:Name="m_passcdeEnableCheck" Checked="onPasscodeEnableChecked" VerticalAlignment="Center" Unchecked="onPasscodeEnableChecked" />
+            <CheckBox x:Name="m_passcdeEnableCheck" Checked="onPasscodeEnableChecked" VerticalAlignment="Center" Unchecked="onPasscodeEnableChecked" IsChecked="False" />
         </StackPanel>
         <StackPanel Margin="0,20,0,0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Button x:Name="m_startEndButton" Content="開始" Width="100" Height="50" Click="onStartEndButton" />
-            <Label Content="表示のみ" VerticalAlignment="Center"/>
+            <Button x:Name="m_startEndButton" Content="モニタ開始" Width="350" Height="50" Click="onStartEndButton" />
+            <Label x:Name="m_showOnlyLabel" Content="表示のみ" VerticalAlignment="Center"/>
             <CheckBox x:Name="m_showOnlyCheck" VerticalAlignment="Center"/>
         </StackPanel>
         <StackPanel x:Name="m_nowAccessPanel"  Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0" >
@@ -43,7 +58,12 @@
             </StackPanel>
             <Button Grid.Column="1" x:Name="m_logButton" Content="ログ" Width="100" HorizontalAlignment="Right" Click="onLogButton"/>
         </Grid>
-<!--       
+        <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+            <Button Content=" このPCをアクセスポイントにする※Wi-fi未接続時のみ有効" />
+            <Label Content=" パスワード(8文字以上)"/>
+            <TextBox x:Name="m_apPasswordTxt" Width="150" />
+        </StackPanel>
+        <!--       
         <StackPanel Orientation="Horizontal">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                 <Button x:Name="m_logButton1" Content="ログ" Width="100" Click="onLogButton"/>

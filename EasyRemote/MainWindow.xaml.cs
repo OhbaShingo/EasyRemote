@@ -1,4 +1,6 @@
-﻿using System.Printing;
+﻿using EasyRemote.WebService;
+using System.Printing;
+using System.Security.Policy;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,6 +42,17 @@ namespace EasyRemote
             m_accessPortTxt.Text = webPort.ToString();
             m_showRateTxt.Text = Properties.Settings.Default.ShowRate.ToString();
 
+            // パスチェック有効/無効
+            bool isPasscheck = Properties.Settings.Default.IsPasscheck;
+            m_passcdeEnableCheck.IsChecked = isPasscheck;
+
+#if !DEBUG
+            m_showOnlyLabel.Visibility = Visibility.Hidden;
+            m_showOnlyCheck.Visibility = Visibility.Hidden;
+#endif
+
+            checkPortEnable( webPort );
+            showNetworkCardList();            
             showAccessURL();
             showPassCode();
         }
@@ -60,6 +73,7 @@ namespace EasyRemote
             if(m_webService.Port != 0) {
                 Properties.Settings.Default.WebPort = m_webService.Port;
             }
+            Properties.Settings.Default.IsPasscheck = ( m_passcdeEnableCheck.IsChecked == true );
 
             Properties.Settings.Default.Save(); // プロパティの保存
             if(m_logWindow != null)
@@ -79,8 +93,11 @@ namespace EasyRemote
             ushort port = 0;
             if (ushort.TryParse( txt, out port ) == false )
             {   // 数字以外のモノを入力した場合は現在保存されているポート番号に戻す
-                m_accessPortTxt.Text = Properties.Settings.Default.WebPort.ToString();
+                port = Properties.Settings.Default.WebPort;
+                m_accessPortTxt.Text = port.ToString();
             }
+
+            checkPortEnable( port );
             showAccessURL();
         }
     
@@ -102,9 +119,39 @@ namespace EasyRemote
 
 
         /// <summary>
+        /// ネットワークカード一覧表示
+        /// </summary>
+        private void showNetworkCardList()
+        {
+            List<AccessInfo> cardList = m_webService.getNetworkCardList();
+            foreach(AccessInfo card in cardList )
+            {
+                m_cardCombo.Items.Add( card );
+            }
+            m_cardCombo.SelectedIndex = 0;
+        }
+
+        /// <summary>
+        /// 指定ポートの有効/無効チェック
+        /// </summary>
+        /// <param name="port"></param>
+        private void checkPortEnable( int port )
+        {
+            if( m_webService.isEnableWebPort( port ) == true)
+            {
+                m_portEnableButton.Content = "ポート有効済";
+            }
+            else
+            {
+                m_portEnableButton.Content = "ポート有効化";
+            }
+        }
+
+
+        /// <summary>
         /// アクセスURLの表示
         /// </summary>
-        private void showAccessURL()
+        private void showAccessURL(  )
         {
             string txt = m_accessPortTxt.Text;
             ushort port;
@@ -112,8 +159,17 @@ namespace EasyRemote
             {
                 port = Properties.Settings.Default.WebPort;
             }
-            string url = m_webService.getRequestURL( port );
-            m_accessURLText.Text = url;
+
+            AccessInfo info = (AccessInfo)m_cardCombo.SelectedItem;
+            m_accessURLText.Text = info.getURLForIp( port.ToString() );
+            if (m_webService.IsRunnning == true )
+            {   // アクセス可能の時はQRコードを表示
+                m_accessQrImage.Visibility = Visibility.Visible;
+                m_accessQrImage.Source = info.createURLCode( port.ToString() );
+            } else
+            {   // アクセス不可能の時はQRコードを非表示
+                m_accessQrImage.Visibility = Visibility.Collapsed;
+            }
         }
 
         /// <summary>
@@ -138,15 +194,19 @@ namespace EasyRemote
                 m_showOnlyCheck.IsEnabled = false;
                 if(m_webService.IsRunnning == true )
                 {
-                    m_startEndButton.Content = "終了";
+                    m_startEndButton.Content = "モニタ終了";
+
+                    showAccessURL(  );
+
                 }
 
             } else
             {
                 m_webService.stop();
                 m_showOnlyCheck.IsEnabled = true;
-                m_startEndButton.Content = "開始";
+                m_startEndButton.Content = "モニタ開始";
                 m_nowAccessPanel.Visibility = Visibility.Hidden;
+                showAccessURL();
             }
         }
 
@@ -212,6 +272,26 @@ namespace EasyRemote
             }
         }
 
+        /// <summary>
+        /// 選択中のカード変更イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void onCardComboSelectChange(object sender, SelectionChangedEventArgs e)
+        {
+            showAccessURL();
+        }
 
+        /// <summary>
+        /// ポート有効ボタン
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void onPortEnableButton(object sender, RoutedEventArgs e)
+        {
+            int port = int.Parse(m_accessPortTxt.Text);
+            m_webService.enableWebPort( port );
+            checkPortEnable( port );
+        }
     }
 }

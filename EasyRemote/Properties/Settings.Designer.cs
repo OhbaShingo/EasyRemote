@@ -46,5 +46,17 @@ namespace EasyRemote.Properties {
                 this["ShowRate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsPasscheck {
+            get {
+                return ((bool)(this["IsPasscheck"]));
+            }
+            set {
+                this["IsPasscheck"] = value;
+            }
+        }
     }
 }
