@@ -19,29 +19,49 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="AUTO"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="AUTO"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="AUTO"/>
                     <RowDefinition Height="AUTO"/>
                     <RowDefinition Height="200"/>
                 </Grid.RowDefinitions>
+                <Grid.Resources>
+                    <Style TargetType="Label">
+                        <Setter Property="Margin" Value="2" />
+                    </Style>
+                    <Style TargetType="ComboBox">
+                        <Setter Property="Margin" Value="2" />
+                    </Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Margin" Value="2" />
+                    </Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Margin" Value="2" />
+                    </Style>
+                    <Style TargetType="Image">
+                        <Setter Property="Margin" Value="2" />
+                    </Style>
+                </Grid.Resources>
+
                 <Label Grid.Row="0" Grid.Column="0"  Content="ネットワークカード"/>
-                <ComboBox x:Name="m_cardCombo" Grid.Row="0" Grid.Column="1" SelectionChanged="onCardComboSelectChange" ></ComboBox>
+                <ComboBox Grid.Row="0" Grid.Column="1" x:Name="m_cardCombo" SelectionChanged="onCardComboSelectChange" ></ComboBox>
                 <Label Grid.Row="1" Grid.Column="0" Content="アクセスURL"/>
                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="m_accessURLText" IsReadOnly="True"/>
                 <Image Grid.Row="2" Grid.Column="1" x:Name="m_accessQrImage"/>
+                <Button Grid.Row="0" Grid.Column="2" x:Name="m_updateNetButton" Width="40" Content="更新" Click="onUpdateNetButton"/>
             </Grid>    
         </GroupBox>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
             <Label Content="パスコード" />
             <TextBox x:Name="m_passcodeText" Width="50" TextAlignment="Center" IsReadOnly="True"/>
             <Label Content="パスコード不要"/>
-            <CheckBox x:Name="m_passcdeEnableCheck" Checked="onPasscodeEnableChecked" VerticalAlignment="Center" Unchecked="onPasscodeEnableChecked" IsChecked="False" />
+            <CheckBox x:Name="m_passcdeEnableCheck" IsChecked="true" Checked="onPasscodeEnableChecked" VerticalAlignment="Center" Unchecked="onPasscodeEnableChecked"/>
         </StackPanel>
         <StackPanel Margin="0,20,0,0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Button x:Name="m_startEndButton" Content="モニタ開始" Width="350" Height="50" Click="onStartEndButton" />
-            <Label x:Name="m_showOnlyLabel" Content="表示のみ" VerticalAlignment="Center"/>
-            <CheckBox x:Name="m_showOnlyCheck" VerticalAlignment="Center"/>
+            <Label x:Name="m_showOnlyLabel" Content="表示のみ"  VerticalAlignment="Center"/>
+            <CheckBox x:Name="m_showOnlyCheck" IsChecked="true" VerticalAlignment="Center"/>
         </StackPanel>
         <StackPanel x:Name="m_nowAccessPanel"  Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0" >
             <Label x:Name="m_nowAccessLabel" Content="アクセス中IP="/>
@@ -58,20 +78,19 @@
             </StackPanel>
             <Button Grid.Column="1" x:Name="m_logButton" Content="ログ" Width="100" HorizontalAlignment="Right" Click="onLogButton"/>
         </Grid>
-        <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-            <Button Content=" このPCをアクセスポイントにする※Wi-fi未接続時のみ有効" />
-            <Label Content=" パスワード(8文字以上)"/>
-            <TextBox x:Name="m_apPasswordTxt" Width="150" />
-        </StackPanel>
-        <!--       
-        <StackPanel Orientation="Horizontal">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <Button x:Name="m_logButton1" Content="ログ" Width="100" Click="onLogButton"/>
+        
+        <!--
+
+        <GroupBox Header="ホットスポット(本PCをアクセスポイント化)">
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Button Content="AP有効" Width="60"/>
+                <Label Content="  パスワード(8文字以上)"/>
+                <TextBox x:Name="m_apPasswordTxt" Width="150" />
+                <Label Content="  SSID"/>
+                <Label x:Name="m_ssidLabel" Content="   "/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="m_logButton" Content="ログ" Width="100" Click="onLogButton"/>
-            </StackPanel>
-        </StackPanel>
--->        
+        </GroupBox>
+
+        -->
     </StackPanel>
 </Window>

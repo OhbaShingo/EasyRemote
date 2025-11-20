@@ -24,6 +24,7 @@ namespace EasyRemote
         private WebService.WebService m_webService;
         public MainWindow()
         {
+            m_webService = new WebService.WebService(this);
             InitializeComponent();
         }
 
@@ -34,7 +35,6 @@ namespace EasyRemote
         /// <param name="e"></param>
         private void onLoaded(object sender, RoutedEventArgs e)
         {
-            m_webService = new WebService.WebService(this);
             m_webService.ShowRate = Properties.Settings.Default.ShowRate;
             m_nowAccessPanel.Visibility = Visibility.Hidden;
             // ポートを設定
@@ -117,6 +117,46 @@ namespace EasyRemote
             m_webService.ShowRate = rate;
         }
 
+        /// <summary>
+        /// 更新ボタン押下
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void onUpdateNetButton(object sender, RoutedEventArgs e)
+        {
+            updateNetworkCardList();
+        }
+
+        /// <summary>
+        /// ネットワークカード更新
+        /// </summary>
+        private void updateNetworkCardList()
+        {
+            AccessInfo nowInfo = (AccessInfo)m_cardCombo.SelectedItem;
+            string? nowName = null;
+            if( nowInfo != null)
+            {   // 選択しているカードがあるなら今のNameを取得
+                nowName = nowInfo.Name;
+            }
+
+            m_cardCombo.Items.Clear();
+            showNetworkCardList();
+
+            if(nowName != null ) {
+                for( int i=0; i<m_cardCombo.Items.Count; i++ )
+                {
+                    AccessInfo info = (AccessInfo)m_cardCombo.Items[i];
+                    if( info.Name == nowName )
+                    {
+                        m_cardCombo.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            showAccessURL();
+        }
+
 
         /// <summary>
         /// ネットワークカード一覧表示
@@ -161,6 +201,7 @@ namespace EasyRemote
             }
 
             AccessInfo info = (AccessInfo)m_cardCombo.SelectedItem;
+            if( info == null) { return; }
             m_accessURLText.Text = info.getURLForIp( port.ToString() );
             if (m_webService.IsRunnning == true )
             {   // アクセス可能の時はQRコードを表示
@@ -293,5 +334,6 @@ namespace EasyRemote
             m_webService.enableWebPort( port );
             checkPortEnable( port );
         }
+
     }
 }

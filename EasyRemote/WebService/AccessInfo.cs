@@ -138,6 +138,11 @@ namespace EasyRemote.WebService
         }
 
         /// <summary>
+        /// Nameの取得
+        /// </summary>
+        public string Name { get { return m_info.Name; } }
+
+        /// <summary>
         /// ネットワークカード文字列取得
         /// </summary>
         /// <returns></returns>

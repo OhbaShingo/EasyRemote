@@ -171,7 +171,6 @@ namespace EasyRemote.WebService
             }
         }
 
-
         /// <summary>
         /// ホットスポット有効/無効
         /// </summary>
@@ -485,12 +484,43 @@ namespace EasyRemote.WebService
         /// <param name="response"></param>
         private async void responseHTML(string fileName, System.Net.HttpListenerResponse response )
         {
+            string htmlContent;
+
+#if DEBUG
+    // Debug：ジャンクション先（または実フォルダ）を直読み
+    string path = Path.Combine(AppContext.BaseDirectory, "html", fileName);
+    htmlContent = File.ReadAllText(path);
+#else
+            // Release：埋め込みリソースから読み込み
+            var asm = typeof(WebService).Assembly;   // Program はプロジェクト内の適当なクラス名でOK
+
+            // リソース名は "Namespace.html.ファイル名"
+            string resourceName = asm.GetManifestResourceNames()
+                                      .First(x => x.EndsWith(fileName, StringComparison.OrdinalIgnoreCase));
+
+            using (var stream = asm.GetManifestResourceStream(resourceName))
+            using (var reader = new StreamReader(stream))
+            {
+                htmlContent = reader.ReadToEnd();
+            }
+#endif
+
+            byte[] htmlByte = System.Text.Encoding.UTF8.GetBytes(htmlContent);
+
+            response.ContentType = "text/html; charset=utf-8";
+            response.ContentLength64 = htmlByte.Length;
+
+            await response.OutputStream.WriteAsync(htmlByte, 0, htmlByte.Length);
+
+
+            /*
             string htmlContent = System.IO.File.ReadAllText("html/" + fileName);
             byte[] htmlByte = System.Text.Encoding.UTF8.GetBytes(htmlContent);
 
             response.ContentType = "text/html; charset=utf-8";
             response.ContentLength64 = htmlByte.Length;
             await response.OutputStream.WriteAsync(htmlByte, 0, htmlByte.Length);
+            */
         }
         
         static int WAIT_TIME = 200;
